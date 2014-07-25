@@ -2,18 +2,24 @@
 
 NEI <- readRDS("summarySCC_PM25.rds")
 
+#Subset the data on Baltimore
+
 BMdata <- NEI[which(NEI$fips == "24510"),]
+
+#Summarise the total emissions per type
 
 Total.emissions3 <- ddply(BMdata, .(year, type), summarise, 
                                  Total.emissions = sum(Emissions))
+
+#Tidy up the labels
 
 Total.emissions3$type <- ordered(Total.emissions3$type, 
                                  levels = c("POINT", "NONPOINT", "ON-ROAD", "NON-ROAD"),
                                  labels = c("point", "non-point", "on-road", "non-road"))
 
-library("ggplot2")
+#Create the plot
 
-png(file = "plot3.png")
+library("ggplot2")
 
 plot3 <- ggplot(data = Total.emissions3, aes(x = factor(year), y = Total.emissions, colour = type, group = type)) +
                     geom_line() +
@@ -22,6 +28,10 @@ plot3 <- ggplot(data = Total.emissions3, aes(x = factor(year), y = Total.emissio
                     theme_bw() +
                     # Remove space at either side of graph
                     scale_x_discrete(expand = c(0.05, 0.05))
+
+# Save the plot as a .png file
+
+png(file = "plot3.png")
 
 print(plot3)
 
